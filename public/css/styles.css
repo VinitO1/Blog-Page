@@ -1,3 +1,9 @@
+.postPage {
+    margin-right: 50px;
+    margin-left: 50px;
+    margin-top: 10px;
+}
+
 .container-fluid {
     padding-top: 70px;
     padding-bottom: 70px;

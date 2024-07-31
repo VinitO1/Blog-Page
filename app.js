@@ -39,28 +39,76 @@ app.get("/compose", function (req, res) {
 );
 app.post("/compose", function (req, res) {
   const post = {
+    id: posts.length + 1,
     title: req.body.postTitle,
     content: req.body.postBody
   };
+  console.log(post);
   posts.push(post);
   res.redirect("/");
 }
 );
+app.get("/posts/:postId", (req, res) => {
+  const requestedPostId = Number(req.params.postId);
 
-app.get('/posts/:postName', (req, res) => {
-  const requestedTitle = _.lowerCase(req.params.postName);
+  const post = posts.find(post => post.id === requestedPostId);
 
-  posts.forEach((post) => {
-    const storedTitle = _.lowerCase(post.title);
-    if (storedTitle === requestedTitle) {
-      res.render("post", {
-        title: post.title,
-        content: post.content
-      });
-    }
-  })
+  if (post) {
+    res.render("post", {
+      id: post.id,
+      title: post.title,
+      content: post.content
+    });
+  } else {
+    res.status(404).send("Post not found");
+  }
 });
 
+app.get("/posts/:postId/edit", (req, res) => {
+  const requestedPostId = Number(req.params.postId);
+
+  const post = posts.find(post => post.id === requestedPostId);
+
+  if (post) {
+    res.render("edit", {
+      id: post.id,
+      title: post.title,
+      content: post.content
+    });
+  } else {
+    res.status(404).send("Post not found");
+  }
+});
+
+app.post("/posts/:postId/edit", (req, res) => {
+  const requestedPostId = Number(req.params.postId);
+
+  const post = posts.find(post => post.id === requestedPostId);
+
+  if (post) {
+    post.title = req.body.title;
+    post.content = req.body.content;
+
+    // Redirect to the post view page after editing
+    res.redirect("/");
+  } else {
+    res.status(404).send("Post not found");
+  }
+});
+
+app.get("/posts/:postId/delete", (req, res) => {
+  const requestedPostId = Number(req.params.postId);
+
+  const post = posts.find(post => post.id === requestedPostId);
+
+  if (post) {
+    posts = posts.filter(post => post.id !== requestedPostId);
+    res.redirect("/");
+
+  } else {
+    res.status(404).send("Post not found");
+  }
+});
 
 app.listen(port, function () {
   console.log(`Server started on port ${port}`);
